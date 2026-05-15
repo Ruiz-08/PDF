@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aportar a la Meta - PesatusPesos</title>
+    <!-- Incluir CSS -->
+    <link rel="stylesheet" href="{% static 'panel_ahorros/css/est_aporte.css' %}">
+    <!-- Fuentes y Iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="modal-overlay">
+
+        <!-- Contenedor Principal (Modal) -->
+
+        <main class="modal-container">
+            <!-- Header -->
+            <header class="modal-header">
+                <div class="header-titles">
+                    <h2>APORTAR A LA META</h2>
+                    <p>Haz un aporte para avanzar hacia tu meta</p>
+                </div>
+            </header>
+
+            <!-- Goal Info Card -->
+            <section class="goal-info-card">
+                <div class="goal-image-wrapper">
+                    <img src="{% static 'panel_ahorros/img/default_meta.png' %}" alt="Meta" class="goal-image" id="goal-image-display">
+                </div>
+                <div class="goal-details">
+                    <span class="goal-label">Mi meta:</span>
+                    <h3 class="goal-title" id="goal-title-display">Cargando meta...</h3>
+                </div>
+                <div class="goal-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">Monto actual:</span>
+                        <span class="stat-value" id="monto-actual-display">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Meta:</span>
+                        <span class="stat-value" id="monto-meta-display">$0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Progreso:</span>
+                        <span class="stat-value highlight" id="progreso-texto-display">0%</span>
+                    </div>
+                </div>
+                <div class="goal-chart-wrapper">
+                    <svg viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path class="circle"
+                            id="circle-progress-path"
+                            stroke-dasharray="0, 100"
+                            d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="20.8" class="percentage" id="progreso-chart-display">0%</text>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Main Grid Content -->
+            <div class="main-content-grid">
+                
+                <!-- Left Column: Calendar -->
+                <section class="calendar-section">
+                    <div class="calendar-header-nav">
+                        <button class="cal-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <h4 class="cal-month-title" id="calendar-title">MES AÑO</h4>
+                        <button class="cal-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Generado por JS -->
+                    </div>
+
+
+                </section>
+
+                <!-- Right Column: Input & Info -->
+                <section class="input-section">
+                    
+                    <!-- Selected Date -->
+                    <div class="info-box date-box">
+                        <p class="box-label">Día seleccionado</p>
+                        <div class="date-selector">
+                            <img src="{% static 'panel_ahorros/img/calendario.png' %}" alt="Calendario" class="selected-date-icon">
+                            <h4 class="date-text" id="selected-date-text">Selecciona un día</h4>
+                        </div>
+                    </div>
+
+                    <!-- Input Amount -->
+                    <div class="info-box amount-box">
+                        <p class="box-label">¿Cuánto quieres aportar?</p>
+                        <div class="input-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input type="text" id="aporte-input" value="0.00" aria-label="Cantidad a aportar">
+                        </div>
+                        <div class="quick-amounts" id="quick-amounts-container">
+                            <!-- Botones generados por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Milestone Info -->
+                    <div class="info-box milestone-box">
+                        <div class="milestone-content">
+                            <div class="milestone-icon-wrapper" style="box-shadow: 0 0 20px rgba(207, 181, 59, 0.6); overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 5px;">
+                                <img src="{% static 'panel_ahorros/img/ahorro.png' %}" alt="Ahorro" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 5px rgba(207, 181, 59, 0.8));">
+                            </div>
+                            <p class="milestone-text" id="milestone-text-msg">
+                                Llevas <strong class="white-text">$0</strong> y te faltan <strong class="white-text">$0</strong> para completar tu meta
+                            </p>
+                        </div>
+                        <div class="milestone-progress-bar">
+                            <div class="milestone-progress-fill" id="milestone-progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer Actions -->
+            <footer class="modal-actions-footer">
+                <div class="action-buttons">
+                    <button class="btn-primary" id="btn-aportar">
+                        <i class="fas fa-coins" style="margin-right: 8px;"></i> APORTAR
+                    </button>
+                    <a href="{% url 'panel_ahorros:index' %}" class="btn-secondary-link">CERRAR</a>
+                </div>
+                <a href="#" class="history-link" id="link-historial">
+                    <i class="fas fa-wallet" style="margin-right: 5px;"></i> Ver historial <i class="fas fa-chevron-right arrow-sm"></i>
+                </a>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal de Aviso Personalizado -->
+    <div id="modalAviso" class="modal-aviso">
+      <div class="modal-aviso-contenido">
+        <div class="modal-aviso-header">
+          <i class="fa-solid fa-bell"></i>
+          <span>Aviso del Sistema</span>
+        </div>
+        <p id="mensajeAviso" class="modal-aviso-mensaje"></p>
+        <div class="modal-aviso-footer">
+          <button id="btnAceptarAviso" class="btn-primary">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Meta Completada -->
+    <div id="modalMetaCompletada" class="modal-aviso">
+      <div class="modal-aviso-contenido">
+        <div class="modal-aviso-header">
+          <i class="fa-solid fa-trophy" style="color: #ffd700;"></i>
+          <span>¡FELICITACIONES!</span>
+        </div>
+        <p class="modal-aviso-mensaje"> Has completado tu meta.<br>Esta meta será deshabilitada automáticamente.</p>
+        <div class="modal-aviso-footer" style="display: flex; gap: 10px; justify-content: center;">
+          <button id="btnVerMeta" class="btn-secondary" style="margin: 0; min-width: 120px;">Ver meta</button>
+          <button id="btnCerrarMetaCompletada" class="btn-primary" style="margin: 0; min-width: 120px;">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Historial Premium -->
+    <div id="modalHistorial" class="modal-premium-overlay">
+        <div class="modal-premium-content">
+            <!-- Header -->
+            <div class="modal-premium-header">
+                <div class="header-title">
+                    <i class="fas fa-file-invoice-dollar" style="color: var(--gold-light);"></i>
+                    <div>
+                        <h2>Historial de meta</h2>
+                        <p>Revisa todos los aportes que has realizado para tu meta</p>
+                    </div>
+                </div>
+                <button id="btnCerrarHistorial" class="btn-cerrar-large">Cerrar</button>
+            </div>
+
+            <div class="modal-premium-body">
+                <!-- Columna Izquierda -->
+                <div class="col-izq">
+                    <!-- Resumen de Meta Superior -->
+                    <div class="resumen-meta-card">
+                        <div class="meta-img-container">
+                            <img id="historialMetaImg" src="{% static 'panel_ahorros/img/ahorro.png' %}" alt="Meta">
+                        </div>
+                        <div class="meta-info">
+                            <span class="meta-label">MI META</span>
+                            <h3 id="historialMetaTitulo">Nombre de meta</h3>
+                            <div class="meta-stats-grid">
+                                <div>
+                                    <span class="stat-lbl">Monto objetivo</span>
+                                    <span class="stat-val" id="historialMetaObjetivo">$0</span>
+                                </div>
+                                <div>
+                                    <span class="stat-lbl">Total ahorrado</span>
+                                    <span class="stat-val" id="historialMetaAhorrado">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="meta-chart-container" style="position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <canvas id="historialProgresoChart" style="position: absolute; z-index: 1;"></canvas>
+                            <span id="historialProgresoTexto" style="position: relative; z-index: 2; font-size: 1.1rem; font-weight: bold; color: var(--text-primary);">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Aportes -->
+                    <div class="lista-aportes-section">
+                        <div class="lista-header">
+                            <h3>LISTA DE APORTES</h3>
+                        </div>
+                        
+                        <!-- Filtros -->
+                        <div class="filtros-container">
+                            <div class="filtro-item">
+                                <i class="far fa-calendar-alt"></i>
+                                <select id="filtroFecha">
+                                    <option value="all">Todas las fechas</option>
+                                    <option value="month">Este mes</option>
+                                    <option value="year">Este año</option>
+                                </select>
+                            </div>
+                            <div class="filtro-item">
+                                <i class="fas fa-tag"></i>
+                                <select id="filtroTipo">
+                                    <option value="all">Todos los tipos</option>
+                                    <option value="rápido">Aporte rápido</option>
+                                    <option value="manual">Aporte manual</option>
+                                </select>
+                            </div>
+                            <button id="btnLimpiarFiltros" class="btn-limpiar-filtros">
+                                <i class="fas fa-undo"></i> Limpiar filtros
+                            </button>
+                        </div>
+
+                        <!-- Tabla -->
+                        <div class="tabla-premium-container">
+                            <table class="tabla-premium">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha <i class="fas fa-arrow-down"></i></th>
+                                        <th>Tipo de aporte</th>
+                                        <th>Descripción</th>
+                                        <th>Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaHistorialBody">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                            <div id="mensajeSinHistorial" class="mensaje-vacio" style="display:none;">
+                                No hay aportes registrados aún.
+                            </div>
+                        </div>
+                        <div class="tabla-footer">
+                            <div class="pagination-controls" id="paginationControls" style="display:none;">
+                                <button id="btnPrevPage" class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                                <div id="pageNumbers" class="page-numbers"></div>
+                                <button id="btnNextPage" class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="col-der">
+                    <!-- Exportar -->
+                    <div class="exportar-card">
+                        <div class="exportar-info">
+                            <h4><i class="fas fa-download" style="color: var(--gold-light);"></i> Descargar historial</h4>
+                            <p>Obtén un reporte de tus aportes.</p>
+                        </div>
+                        <div class="exportar-btns">
+                            <button id="btnExportarPDFAporte" class="btn-export-pdf"><i class="fas fa-file-pdf"></i> PDF</button>
+                            <button id="btnExportarExcelAporte" class="btn-export-excel"><i class="fas fa-file-excel"></i> EXCEL</button>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico Evolución -->
+                    <div class="evolucion-card">
+                        <div class="evolucion-header">
+                            <h4>TU PROGRESO EN EL TIEMPO</h4>
+                        </div>
+                        <div class="evolucion-chart-wrapper">
+                            <canvas id="historialEvolucionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del historial -->
+                    <div class="resumen-historial-card">
+                        <h4>RESUMEN DEL HISTORIAL</h4>
+                        <div class="resumen-row">
+                            <span>Total de aportes</span>
+                            <span id="resTotalAportes">0</span>
+                        </div>
+                        <div class="resumen-row">
+                            <span>Monto total aportado</span>
+                            <span id="resMontoTotal" class="highlight-green">$0.00</span>
+                        </div>
+                        <div class="resumen-row">
+                            <span>Aporte promedio</span>
+                            <span id="resPromedio" class="highlight-blue">$0.00</span>
+                        </div>
+                        <div class="resumen-row">
+                            <span>Primer aporte</span>
+                            <span id="resPrimerAporte">-</span>
+                        </div>
+                        <div class="resumen-row">
+                            <span>Último aporte</span>
+                            <span id="resUltimoAporte">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="{% static 'panel_ahorros/js/ani_aporte.js' %}"></script>
+</body>
+</html>

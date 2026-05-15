@@ -1,0 +1,504 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PesatusPesos - Panel de Deuda</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'panel_deuda/img/coins-solid.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'panel_deuda/css/deuda.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  </head>
+
+  <body>
+    <div class="contenedor-flotante-app">
+      <header class="barra">
+        <div class="caja-logo">
+          <i class="fa-solid fa-coins" style="font-size: 2rem; color: #CFB53B;"></i>
+          <span class="texto-logo">PESATUSPESOS</span>
+        </div>
+        <div class="menu-wrapper">
+          <nav class="menu">
+            <button onclick="window.location.href='../Home/index.html'">Inicio</button>
+            <button onclick="window.location.href='../panel_movimientos/movimientos.html'">Movimientos</button>
+            <button onclick="window.location.href='deuda.html'">Deuda</button>
+            <button onclick="window.location.href='../panel_ahorros/ahorros.html'">Ahorro</button>
+          </nav>
+        </div>
+
+        <div class="contenedor-flotante">
+          <div class="opciones-flotantes">
+            <button class="boton-opcion boton-manual">
+              <img src="{% static 'panel_deuda/img/informacion (1).png' %}" alt="Manual" />
+            </button>
+            <button class="boton-opcion boton-atencion">
+              <img src="{% static 'panel_deuda/img/apoyo (1).png' %}" alt="Atencion" />
+            </button>
+            <button class="boton-opcion boton-editar" id="botonPerfil">
+              <img src="{% static 'panel_deuda/img/avatar-de-usuario (1).png' %}" alt="Editar" />
+            </button>
+          </div>
+
+          <span class="nombre-usuario-header" id="nombreUsuarioHeader">Usuario</span>
+          <button class="boton-principal" id="botonConfiguracion">
+            <img src="{% static 'panel_deuda/img/ajustes.png' %}" alt="Configuración" />
+          </button>
+        </div>
+      </header>
+
+      <main class="contenido">
+
+        <section class="principal dash-principal">
+          <!-- Barra de Herramientas y Filtros -->
+          <div class="dash-toolbar">
+            <div class="dash-filters">
+              <div class="filter-group">
+                <label><i class="fa-solid fa-calendar"></i> Fecha</label>
+                <select id="filtroFecha">
+                  <option>Este año</option>
+                  <option>Este mes</option>
+                  <option>Personalizado</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label><i class="fa-solid fa-building"></i> Entidad</label>
+                <select id="filtroEntidad">
+                  <option>Todas</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label><i class="fa-solid fa-lock"></i> Tipo de Deuda</label>
+                <select id="filtroTipo">
+                  <option>Todas</option>
+                  <option>Crédito</option>
+                  <option>Tarjeta</option>
+                  <option>Préstamo</option>
+                  <option>Comercial</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label><i class="fa-solid fa-shield-halved"></i> Estado</label>
+                <select id="filtroEstado">
+                  <option>Todos</option>
+                  <option>Al día</option>
+                  <option>Pendiente</option>
+                </select>
+              </div>
+
+              <button class="btn-apply" id="btnAplicarFiltros">
+                <i class="fa-solid fa-filter"></i> Aplicar Filtros
+              </button>
+              <button class="btn-clean" id="btnLimpiarFiltros">
+                <i class="fa-solid fa-rotate-left"></i> Limpiar
+              </button>
+            </div>
+            <div class="dash-actions">
+              <button id="btnExportarExcel" class="btn-exportar" title="Exportar Excel">
+                <i class="fas fa-file-excel"></i> <span>EXCEL</span>
+              </button>
+              <a href="{% url 'reporte:descargar_deudas_pdf' %}" id="btnDescargarPDF" class="btn-exportar" title="Descargar PDF" style="text-decoration: none;">
+                <i class="fas fa-file-pdf"></i> <span>PDF</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ══════════ PARTE SUPERIOR: KPI CARDS ══════════ -->
+          <div class="dash-kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-wallet"></i></div>
+              <div class="kpi-info">
+                <h3>Deuda Total</h3>
+                <p class="kpi-value" id="valDeudaTotal">$0</p>
+                <span class="kpi-trend negative"><i class="fa-solid fa-arrow-down"></i> 0% vs mes ant</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-calendar-check"></i></div>
+              <div class="kpi-info">
+                <h3>Pagos del Mes</h3>
+                <p class="kpi-value" id="valPagosMes">$0</p>
+                <span class="kpi-trend positive"><i class="fa-solid fa-arrow-up"></i> 0% vs mes ant</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-dollar-sign"></i></div>
+              <div class="kpi-info">
+                <h3>Saldo Pendiente</h3>
+                <p class="kpi-value" id="valSaldoPendiente">$0</p>
+                <span class="kpi-subtext">0% del total</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-clock"></i></div>
+              <div class="kpi-info">
+                <h3>Próximo Vencimiento</h3>
+                <p class="kpi-value" id="valProxVenc">0 días</p>
+                <span class="kpi-subtext status-date">-- -- ----</span>
+              </div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-icon blue"><i class="fa-solid fa-money-bill-wave"></i></div>
+              <div class="kpi-info">
+                <h3>Total Abonado</h3>
+                <p class="kpi-value" id="valTotalAbonado">$0</p>
+                <span class="kpi-subtext">Historial de pagos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════ PARTE CENTRAL: Detalle | Historial ══════════ -->
+          <div class="dash-center-grid">
+
+            <!-- IZQUIERDA: Detalle de Deudas -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2>Detalle de Deudas</h2>
+                <button class="btn-add-deuda" id="btnAbrirModalDeuda">
+                  <i class="fa-solid fa-plus"></i> Agregar
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Acreedor</th>
+                      <th>Tipo</th>
+                      <th>Saldo Inicial</th>
+                      <th>Saldo Actual</th>
+                      <th>Tasa (%)</th>
+                      <th>Vencimiento</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaDeudasBody">
+                    <!-- Se llenará vía JS -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination-container" id="paginacionDeudas">
+                <!-- Se llenará vía JS -->
+              </div>
+            </div>
+
+            <!-- DERECHA: Evolución de la Deuda -->
+            <div class="chart-container">
+              <div class="chart-header">
+                <h2>Evolución de la Deuda</h2>
+                <select class="chart-select" id="selectEvolucion">
+                  <option value="12">12 meses</option>
+                  <option value="6">6 meses</option>
+                </select>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartEvolucion"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ══════════ PARTE INFERIOR: Gráficas ══════════ -->
+          <div class="dash-charts-grid">
+
+            <!-- IZQUIERDA: Historial de Pagos -->
+            <div class="table-container">
+              <div class="table-header">
+                <h2>Historial de Pagos</h2>
+                <button class="btn-add-pago" id="btnAbrirModalPago">
+                  <i class="fa-solid fa-plus"></i> Agregar
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha Pago</th>
+                      <th>Monto Abonado</th>
+                      <th>Método de Pago</th>
+                      <th>Notas</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaHistorialPagosBody">
+                    <!-- Se llenará vía JS -->
+                  </tbody>
+                </table>
+              </div>
+              <div class="pagination-container" id="paginacionPagos">
+                <!-- Se llenará vía JS -->
+              </div>
+            </div>
+
+            <!-- Gráfica 2: Pagos por Mes (reemplaza "Deuda por Tipo") -->
+            <div class="chart-container">
+              <div class="chart-header">
+                <h2>Pagos por Mes</h2>
+              </div>
+              <div class="chart-body">
+                <canvas id="chartPagosMes"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ══════════ BOTONES PDF / EXCEL ══════════ -->
+
+
+        </section>
+
+        <!-- Panel usuario FUERA de .principal -->
+        <aside class="usuario" id="panelUsuario">
+          <div class="panel-header">
+            <div class="header-left">
+              <i class="fas fa-cog"></i>
+              <span>Configuraciones</span>
+            </div>
+            <button class="cerrar-panel" id="cerrarPanel">✕</button>
+          </div>
+          
+          <div class="panel-content">
+            <div class="contenedor-avatar" id="contenedorAvatar">
+              <div class="avatar-circular">
+                <img src="{% static 'panel_deuda/img/hucha.png' %}" id="avatarPrincipal" alt="avatar" />
+              </div>
+              <div class="lapiz-edit">
+                <i class="fas fa-pencil-alt"></i>
+              </div>
+            </div>
+
+            <h2 id="nombre_usuario">Usuario</h2>
+            
+            <div class="seccion-frase">
+              <span class="label-frase">Frase del día</span>
+              <p class="frase" id="frase_motivadora"></p>
+            </div>
+
+            <button class="boton-cerrar">Cerrar sesión</button>
+          </div>
+        </aside>
+
+
+      </main>
+      <!--FOOTER-->
+      <!--FOOTER-->
+    <footer>
+      <div class="footer-grid">
+        <!-- Logo + descripción -->
+        <div class="footer-brand">
+          <div class="footer-logos">
+            <img
+              src="{% static 'panel_deuda/img/logoSenaNaranja.png' %}"
+              alt="SENA"
+              style="width: 50px"
+            />
+            <img
+              src="{% static 'panel_deuda/img/logoptpt.png' %}"
+              alt="Logo 2"
+              style="width: 50px"
+            />
+            <img
+              src="{% static 'panel_deuda/img/Gemini_Generated_Image_8j74rx8j74rx8j74-removebg-preview.png' %}"
+              alt="Logo 3"
+              style="width: 50px"
+            />
+          </div>
+          <p>PesatusPesos · Herramienta de educación financiera</p>
+        </div>
+
+        <!-- Contacto -->
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <p>jmjcompanysa3@gmail.com</p>
+          <p>Lunes a viernes 8:00 a.m. – 6:00 p.m.</p>
+          <p>Tel: +57 310 520 4819</p>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="footer-col">
+          <a href="https://maps.app.goo.gl/h3eUHJXexdZg5feEA" target="_blank" rel="noopener noreferrer" style="display: block; text-decoration: none; color: inherit; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" title="Ver ubicación en Google Maps">
+              <h4><i class="fa-solid fa-location-dot" style="margin-right: 6px; font-size: 1rem; vertical-align: middle; color: #CFB53B;"></i>Ubicación</h4>
+          <p>Medellín, Antioquia</p>
+          <p>Colombia</p>
+          <p>Aprendizaje en línea y seguimiento presencial según programa.</p>
+          </a>
+        </div>
+
+        <!-- Legal -->
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a
+            href="https://drive.google.com/file/d/1niNl3BNnppZKtocOjVEMd492v4KXjG2V/view?usp=sharing"
+            class="politicas-link"
+            >Políticas de privacidad y datos</a
+          >
+          <a
+            href="https://drive.google.com/file/d/1U7qVxJ6KrGPEQ5WMXAMO16hA1F6firyb/view?usp=sharing"
+            class="terminos-link"
+            >Términos y condiciones</a
+          >
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2026 PesatusPesos · Proyecto formativo · SENA
+      </div>
+    </footer>
+    </div>
+
+    <!-- Modal para Agregar/Editar Deuda -->
+    <div id="modalDeuda" class="modal-dash">
+      <div class="modal-dash-content">
+        <span class="close-modal-dash" id="btnCerrarModalDeuda">&times;</span>
+        <h2 id="modalDeudaTitulo">Nueva Deuda</h2>
+        <form id="formDeuda" class="form-grid">
+          <input type="hidden" id="deudaIndex">
+          <div class="form-group">
+            <label for="acreedor">Entidad (Acreedor)</label>
+            <input type="text" id="acreedor" required placeholder="Ej: Banco Nacional">
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo</label>
+            <select id="tipo" required>
+              <option value="Crédito">Crédito</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Préstamo">Préstamo</option>
+              <option value="Comercial">Comercial</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="saldoInicial">Saldo Inicial ($)</label>
+            <input type="text" id="saldoInicial" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="saldoActual">Saldo Actual ($)</label>
+            <input type="text" id="saldoActual" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="tasa">Tasa (%)</label>
+            <input type="number" step="0.01" id="tasa" placeholder="Ej: 1.5">
+          </div>
+
+          <div class="form-group">
+            <label for="vencimiento">Vencimiento</label>
+            <input type="date" id="vencimiento" required>
+          </div>
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <select id="estado" required>
+              <option value="Al día">Al día</option>
+              <option value="Próximo">Próximo</option>
+              <option value="Pendiente">Pendiente</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="btnCancelarDeuda">Cancelar</button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Historial de Pago -->
+    <div id="modalPago" class="modal-dash">
+      <div class="modal-dash-content">
+        <span class="close-modal-dash" id="btnCerrarModalPago">&times;</span>
+        <h2 id="modalPagoTitulo">Nuevo Pago</h2>
+        <form id="formPago" class="form-grid">
+          <input type="hidden" id="pagoIndex">
+          <div class="form-group full-width">
+            <label for="deudaAsociada">Deuda Asociada</label>
+            <select id="deudaAsociada" required>
+              <!-- Filled by JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="fechaPago">Fecha de Pago</label>
+            <input type="date" id="fechaPago" required>
+          </div>
+          <div class="form-group">
+            <label for="montoPago">Monto Abonado ($)</label>
+            <input type="text" id="montoPago" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="metodoPago">Método de Pago</label>
+            <select id="metodoPago" required>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Tarjeta débito">Tarjeta débito</option>
+              <option value="Tarjeta crédito">Tarjeta crédito</option>
+              <option value="PSE">PSE</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="notasPago">Notas</label>
+            <input type="text" id="notasPago" placeholder="Observaciones opcionales">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" id="btnCancelarPago">Cancelar</button>
+            <button type="submit" class="btn-save">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Modal de Confirmación Premium -->
+    <div id="modalConfirm" class="modal-dash">
+      <div class="modal-dash-content modal-confirm">
+        <div class="confirm-icon">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h2 id="confirmTitle">¿Estás seguro?</h2>
+        <p id="confirmMessage">Esta acción no se puede deshacer.</p>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" id="btnConfirmCancel">Cancelar</button>
+          <button type="button" class="btn-save btn-confirm-action" id="btnConfirmOk">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="{% static 'panel_deuda/js/deuda.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem('previewMode') === 'true') {
+          const btnVolver = document.createElement('button');
+          btnVolver.innerHTML = '<i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i> Volver al Administrador';
+          btnVolver.style.position = 'fixed';
+          btnVolver.style.bottom = '30px';
+          btnVolver.style.right = '30px';
+          btnVolver.style.padding = '15px 25px';
+          btnVolver.style.backgroundColor = '#1c84ee';
+          btnVolver.style.color = '#fff';
+          btnVolver.style.border = 'none';
+          btnVolver.style.borderRadius = '8px';
+          btnVolver.style.fontSize = '1rem';
+          btnVolver.style.fontWeight = '600';
+          btnVolver.style.cursor = 'pointer';
+          btnVolver.style.boxShadow = '0 4px 15px rgba(28, 132, 238, 0.4)';
+          btnVolver.style.zIndex = '10000';
+          btnVolver.style.fontFamily = "'Inter', sans-serif";
+          
+          btnVolver.addEventListener('mouseover', () => {
+            btnVolver.style.backgroundColor = '#1565c0';
+          });
+          btnVolver.addEventListener('mouseout', () => {
+            btnVolver.style.backgroundColor = '#1c84ee';
+          });
+          
+          btnVolver.onclick = () => {
+            sessionStorage.removeItem('previewMode');
+            window.location.href = '../panel_admin/resumen.html';
+          };
+          
+          document.body.appendChild(btnVolver);
+        }
+      });
+    </script>
+  </body>
+</html>

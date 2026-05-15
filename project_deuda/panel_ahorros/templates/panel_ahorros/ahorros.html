@@ -1,0 +1,385 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PesatusPesos - Ahorros</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'panel_ahorros/img/coins-solid.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'panel_ahorros/css/est_ahorro.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  </head>
+
+  <body>
+    <div class="contenedor-flotante-app">
+      <header class="barra">
+        <div class="caja-logo">
+          <i class="fa-solid fa-coins" style="font-size: 2rem; color: #CFB53B;"></i>
+          <span class="texto-logo">PESATUSPESOS</span>
+        </div>
+        <div class="menu-wrapper">
+          <nav class="menu">
+            <a href="{% url 'panel_deuda:index' %}" class="menu-link">Inicio</a>
+            <a href="{% url 'panel_egresos:index' %}" class="menu-link">Egresos</a>
+            <a href="{% url 'panel_ingresos:index' %}" class="menu-link">Ingresos</a>
+            <a href="{% url 'panel_ahorros:index' %}" class="menu-link">Ahorro</a>
+          </nav>
+        </div>
+
+        <div class="contenedor-flotante">
+          <div class="opciones-flotantes">
+            <button class="boton-opcion boton-manual">
+              <img src="{% static 'panel_ahorros/img/informacion (1).png' %}" alt="Manual" />
+            </button>
+            <button class="boton-opcion boton-atencion">
+              <img src="{% static 'panel_ahorros/img/apoyo (1).png' %}" alt="Atencion" />
+            </button>
+            <button class="boton-opcion boton-editar" id="botonPerfil">
+              <img src="{% static 'panel_ahorros/img/avatar-de-usuario (1).png' %}" alt="Editar" />
+            </button>
+          </div>
+
+          <span class="nombre-usuario-header" id="nombreUsuarioHeader">Usuario</span>
+          <button class="boton-principal" id="botonConfiguracion">
+            <img src="{% static 'panel_ahorros/img/ajustes.png' %}" alt="Configuración" />
+          </button>
+        </div>
+      </header>
+
+      <main class="contenido">
+
+        <section class="principal">
+          <div class="seccion-metas">
+            <h1 class="titulo-seccion">Crea tus sueños</h1>
+            
+            <!-- Selector de vista -->
+            <div class="view-toggle-bar">
+              <button class="view-btn" id="btnVistaCarro" data-view="carrusel" title="Vista Carrusel">
+                <i class="fa-solid fa-film"></i>
+                <span>Carrusel</span>
+              </button>
+              <button class="view-btn" id="btnVistaCard" data-view="card" title="Vista Cards">
+                <i class="fa-solid fa-grip"></i>
+                <span>Cards</span>
+              </button>
+              <button class="view-btn" id="btnVistaLista" data-view="lista" title="Vista Lista">
+                <i class="fa-solid fa-list"></i>
+                <span>Lista</span>
+              </button>
+            </div>
+
+            <div class="carousel-container">
+              <button class="nav-btn prev" id="prevBtn">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+
+              <div class="carousel-track-container">
+                <div class="carousel-track" id="carouselTrack">
+                  <!-- Tarjeta para crear nueva meta -->
+                  <div class="meta-card card-crear" id="cardCrear">
+                    <div class="card-overlay-crear">
+                      <div class="icon-plus">
+                        <i class="fa-solid fa-plus"></i>
+                      </div>
+                      <p>Crear tu propia meta</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="nav-btn next" id="nextBtn">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <div class="carousel-indicators" id="carouselIndicators">
+              <!-- Los puntos se generarán dinámicamente con JS -->
+            </div>
+
+            <!-- Vista Lista -->
+            <div class="lista-metas-container" id="listaMetas"></div>
+
+            <!-- Vista Card Grid -->
+            <div class="card-grid-container" id="cardGrid"></div>
+
+            <!-- Contenedor de Paginación -->
+            <div class="pagination-container" id="paginationContainer" style="display: none;"></div>
+
+          </div>
+        </section>
+
+        <!-- Panel usuario FUERA de .principal -->
+        <aside class="usuario" id="panelUsuario">
+          <div class="panel-header">
+            <div class="header-left">
+              <i class="fas fa-cog"></i>
+              <span>Configuraciones</span>
+            </div>
+            <button class="cerrar-panel" id="cerrarPanel">✕</button>
+          </div>
+          
+          <div class="panel-content">
+            <div class="contenedor-avatar" id="contenedorAvatar">
+              <div class="avatar-circular">
+                <img src="{% static 'panel_ahorros/img/hucha.png' %}" id="avatarPrincipal" alt="avatar" />
+              </div>
+              <div class="lapiz-edit">
+                <i class="fas fa-pencil-alt"></i>
+              </div>
+            </div>
+
+            <h2 id="nombre_usuario">Usuario</h2>
+            
+            <div class="seccion-frase">
+              <span class="label-frase">Frase del día</span>
+              <p class="frase" id="frase_motivadora"></p>
+            </div>
+
+            <button class="boton-cerrar">Cerrar sesión</button>
+          </div>
+        </aside>
+
+
+        <!-- Modal Crear Meta -->
+        <div class="modal" id="modalCrearMeta">
+          <div class="modal-crear-content">
+            <div class="crear-header">
+              <h2>CREAR NUEVA META</h2>
+              <p>Personaliza tu próximo objetivo de ahorro</p>
+            </div>
+            
+            <div class="crear-body-grid">
+              <!-- Left Column -->
+              <div class="crear-col">
+                <div class="crear-section">
+                  <div class="crear-sec-title">
+                    <span class="sec-num">1</span> DATOS BÁSICOS
+                  </div>
+                  <label class="crear-label">TÍTULO DE LA META</label>
+                  <input type="text" id="tituloMeta" class="crear-input" placeholder="[Ej. Coche Nuevo]">
+                  
+                  <label class="crear-label" style="margin-top: 25px; display: block; text-align: center;">FOTO O IMAGEN</label>
+                  <div class="grid-iconos-wrapper" style="display: flex; justify-content: center; width: 100%; margin-top: 10px;">
+                    <div class="icono-btn foto-btn-large" id="btnSubirFoto">
+                      <div id="contenidoBotonFoto">
+                        <i class="fa-solid fa-camera"></i>
+                        <span id="textoSubirFoto">SUBIR<br>FOTO</span>
+                      </div>
+                    </div>
+                    <input type="file" id="inputFotoMeta" accept="image/*" style="display: none;">
+                  </div>
+                  
+
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="crear-col">
+                <div class="crear-section">
+                  <div class="crear-sec-title">
+                    <span class="sec-num">2</span> OBJETIVOS FINANCIEROS
+                  </div>
+                  <label class="crear-label">MONTO TOTAL A AHORRAR</label>
+                  <div class="input-icon-wrapper">
+                    <span class="simbolo">$</span>
+                    <input type="text" id="montoTotal" class="crear-input with-icon" value="" placeholder="0">
+                    <i class="fa-solid fa-calculator trailing-icon"></i>
+                  </div>
+
+                  <label class="crear-label" style="margin-top: 20px;">DURACIÓN O FECHA LÍMITE (MESES)</label>
+                  <div class="slider-wrapper" style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="duracionMeses" min="1" max="120" value="12" class="styled-slider" style="flex: 1;">
+                    <span id="duracionText" style="font-weight: bold; color: var(--gold-light); width: 45px; font-size: 14px;">12 M</span>
+                  </div>
+                  
+                  <div class="fechas-row" style="margin-top: 15px;">
+                    <div class="fecha-col">
+                      <span class="fecha-sub">DÍA DE AHORRO</span>
+                      <div class="select-group">
+                        <select class="crear-select" id="inicioMes"><option>Mes</option></select>
+                        <select class="crear-select" id="inicioAno"><option>Años</option></select>
+                      </div>
+                    </div>
+                    <div class="fecha-col">
+                      <span class="fecha-sub">FECHA META</span>
+                      <div class="select-group">
+                        <select class="crear-select" id="metaMes"><option>Mes</option></select>
+                        <select class="crear-select" id="metaAno"><option>Años</option></select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="crear-section" style="margin-top: 35px;">
+                  <div class="crear-sec-title">
+                    <span class="sec-num">3</span> CONTRIBUCIONES
+                  </div>
+                  
+                  <div class="fechas-row">
+                    <div class="fecha-col" style="flex:1;">
+                      <label class="crear-label">FRECUENCIA DE APORTES</label>
+                      <div class="slider-wrapper">
+                        <input type="range" id="frecuenciaAporte" min="1" max="3" value="3" class="styled-slider small-slider">
+                      </div>
+                      <div class="frecuencia-labels">
+                        <span>SEMANAL</span><span>QUINCENAL</span><span>MENSUAL</span>
+                      </div>
+                    </div>
+                    <div class="fecha-col" style="width: 140px;">
+                      <label class="crear-label">MONTO DEL APORTE</label>
+                      <input type="text" id="montoAporte" class="crear-input right-align" value="$0" readonly style="background: rgba(0,0,0,0.2); font-weight: bold; color: var(--matte-gold); cursor: not-allowed;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="warningLogica" style="display: none; background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; color: #ffc107; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; text-align: center;">
+              <i class="fas fa-exclamation-triangle"></i> Con este aporte no alcanzarás la meta en el tiempo definido.
+            </div>
+
+            <div class="crear-footer-actions">
+              <button class="btn-primary-gold" id="btnGuardarMeta">GUARDAR Y CREAR META</button>
+              <button class="btn-secondary-transparent" id="btnCancelarCrear">CANCELAR</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+    <!--FOOTER-->
+    <footer>
+      <div class="footer-grid">
+        <!-- Logo + descripción -->
+        <div class="footer-brand">
+          <div class="footer-logos">
+            <img
+              src="{% static 'panel_ahorros/img/logoSenaNaranja.png' %}"
+              alt="SENA"
+              style="width: 50px"
+            />
+            <img
+              src="{% static 'panel_ahorros/img/logoptpt.png' %}"
+              alt="Logo 2"
+              style="width: 50px"
+            />
+            <img
+              src="{% static 'panel_ahorros/img/Gemini_Generated_Image_8j74rx8j74rx8j74-removebg-preview.png' %}"
+              alt="Logo 3"
+              style="width: 50px"
+            />
+          </div>
+          <p>PesatusPesos · Herramienta de educación financiera</p>
+        </div>
+
+        <!-- Contacto -->
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <p>jmjcompanysa3@gmail.com</p>
+          <p>Lunes a viernes 8:00 a.m. – 6:00 p.m.</p>
+          <p>Tel: +57 310 520 4819</p>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="footer-col">
+          <a href="https://maps.app.goo.gl/h3eUHJXexdZg5feEA" target="_blank" rel="noopener noreferrer" style="display: block; text-decoration: none; color: inherit; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" title="Ver ubicación en Google Maps">
+              <h4><i class="fa-solid fa-location-dot" style="margin-right: 6px; font-size: 1rem; vertical-align: middle; color: #CFB53B;"></i>Ubicación</h4>
+          <p>Medellín, Antioquia</p>
+          <p>Colombia</p>
+          <p>Aprendizaje en línea y seguimiento presencial según programa.</p>
+          </a>
+        </div>
+
+        <!-- Legal -->
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a
+            href="https://drive.google.com/file/d/1niNl3BNnppZKtocOjVEMd492v4KXjG2V/view?usp=sharing"
+            class="politicas-link"
+            >Políticas de privacidad y datos</a
+          >
+          <a
+            href="https://drive.google.com/file/d/1U7qVxJ6KrGPEQ5WMXAMO16hA1F6firyb/view?usp=sharing"
+            class="terminos-link"
+            >Términos y condiciones</a
+          >
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © 2026 PesatusPesos · Proyecto formativo · SENA
+      </div>
+    </footer>
+    <!-- Modal de Aviso Personalizado -->
+    <div id="modalAviso" class="modal-aviso">
+      <div class="modal-aviso-contenido">
+        <div class="modal-aviso-header">
+          <i class="fa-solid fa-bell"></i>
+          <span>Aviso del Sistema</span>
+        </div>
+        <p id="mensajeAviso" class="modal-aviso-mensaje"></p>
+        <div class="modal-aviso-footer">
+          <button id="btnAceptarAviso" class="btn-primary-gold">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="modalConfirmar" class="modal-confirmar">
+      <div class="modal-confirmar-contenido">
+        <div class="modal-confirmar-header">
+          <i class="fa-solid fa-circle-question"></i>
+          <span>Confirmación</span>
+        </div>
+        <p id="mensajeConfirmar" class="modal-confirmar-mensaje"></p>
+        <div class="modal-confirmar-footer">
+          <button id="btnConfirmarAceptar" class="btn-confirmar-aceptar">Aceptar</button>
+          <button id="btnConfirmarCancelar" class="btn-confirmar-cancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Éxito al crear meta -->
+    <div id="modalExitoMeta" class="modal-aviso">
+      <div class="modal-aviso-contenido success-theme">
+        <div class="modal-aviso-header">
+          <div class="success-icon-wrapper">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <span id="tituloExito">¡META CREADA!</span>
+        </div>
+        <p class="modal-aviso-mensaje">Tu meta fue creada exitosamente. Es momento de convertir tus planes en realidad.</p>
+        <div class="modal-aviso-footer">
+          <button id="btnIrAMetas" class="btn-primary-gold">Aceptar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Modal Confirmar Eliminación de Meta -->
+    <div class="modal-eliminar" id="modalEliminarMeta">
+      <div class="modal-eliminar-content">
+        <button class="btn-close-modal-eliminar" id="btnCancelarEliminarMetaX">✕</button>
+        <div class="modal-icon-container">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h2>¿Eliminar meta?</h2>
+        <p>Esta acción no se puede deshacer. Puedes descargar el historial de tus aportes antes de eliminarla definitivamente.</p>
+        
+        <div class="modal-eliminar-actions">
+          <button class="btn-download-history-new" id="btnDescargarHistorialEliminar">
+            <i class="fas fa-download"></i> Descargar historial
+          </button>
+          <button class="btn-confirm-delete-new" id="btnConfirmarEliminarMeta">
+            <i class="fas fa-trash-alt"></i> Eliminar definitivamente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static 'panel_ahorros/js/ani_ahorro.js' %}"></script>
+  </body>
+</html>

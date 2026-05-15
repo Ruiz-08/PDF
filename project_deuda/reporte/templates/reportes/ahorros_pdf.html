@@ -1,0 +1,177 @@
+{% extends "reportes/base_pdf.html" %}
+
+{% block content %}
+<style>
+    .dashboard-container { padding: 0; }
+    
+    .resumen-superior {
+        display: table;
+        width: 100%;
+        border-spacing: 15px 0;
+        margin-bottom: 25px;
+        margin-left: -15px;
+    }
+    
+    .tarjeta-resumen {
+        display: table-cell;
+        width: 33.33%;
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .tarjeta-resumen h3 {
+        color: var(--dorado);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin: 0 0 8px 0;
+        letter-spacing: 1px;
+    }
+    
+    .tarjeta-resumen .monto {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .meta-grid-pdf {
+        display: table;
+        width: 100%;
+        border-spacing: 0 15px;
+        margin-top: 10px;
+    }
+
+    .meta-row-pdf {
+        display: table-row;
+        background: #001a2d;
+    }
+
+    .meta-card-pdf {
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.15);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .meta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .meta-title {
+        color: var(--dorado);
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .meta-progress-container {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 5px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .meta-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #cfb53c, #f3d989);
+    }
+
+    .meta-details-pdf {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .highlight-gold { color: #f3d989; font-weight: 700; }
+
+    .seccion-historial-pdf {
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 25px;
+    }
+
+</style>
+
+<div class="dashboard-container">
+    <!-- Resumen Superior (KPIs) -->
+    <div class="resumen-superior">
+        <div class="tarjeta-resumen">
+            <h3>TOTAL AHORRADO</h3>
+            <div class="monto" style="color: #16a34a;">${{ total_ahorrado|floatformat:0 }}</div>
+        </div>
+        <div class="tarjeta-resumen">
+            <h3>META GLOBAL</h3>
+            <div class="monto">${{ total_objetivo|floatformat:0 }}</div>
+        </div>
+        <div class="tarjeta-resumen">
+            <h3>METAS COMPLETADAS</h3>
+            <div class="monto" style="color: var(--dorado);">{{ metas_completadas }} / {{ metas_activas|add:metas_completadas }}</div>
+        </div>
+    </div>
+
+    <!-- Lista de Metas y Progreso -->
+    <h2 style="color: var(--dorado); font-size: 1rem; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid rgba(207, 181, 60, 0.3); padding-bottom: 5px;">
+        Estado de Mis Metas de Ahorro
+    </h2>
+
+    {% for meta in metas %}
+    <div class="meta-card-pdf">
+        <div class="meta-header">
+            <span class="meta-title">{{ meta.obj.titulo }}</span>
+            <span style="{{ meta.css_color }} font-weight: 700;">{{ meta.progreso }}%</span>
+        </div>
+        <div class="meta-progress-container">
+            <div class="meta-progress-fill" style="{{ meta.css_progreso }}"></div>
+        </div>
+        <div class="meta-details-pdf">
+            <span>Ahorrado: <span class="highlight-gold">${{ meta.ahorrado|floatformat:0 }}</span></span>
+            <span>Objetivo: <span style="color: #fff;">${{ meta.obj.monto_objetivo|floatformat:0 }}</span></span>
+            <span>Faltante: <span style="color: #ff4d4d;">${{ meta.faltante|floatformat:0 }}</span></span>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Historial Reciente de Aportes -->
+    <div class="seccion-historial-pdf">
+        <div style="color: var(--dorado); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px;">Últimos Aportes Realizados</div>
+        <table class="tabla-premium" style="background: transparent;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(207, 181, 60, 0.3);">
+                    <th style="color: var(--dorado); background: transparent; padding-left: 0;">Fecha</th>
+                    <th style="color: var(--dorado); background: transparent;">Meta Destino</th>
+                    <th style="color: var(--dorado); background: transparent;">Método</th>
+                    <th style="color: var(--dorado); background: transparent; text-align: right; padding-right: 0;">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aporte in historial_aportes %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <td style="color: rgba(255,255,255,0.8); padding-left: 0;">{{ aporte.fecha|date:"d/m/Y" }}</td>
+                    <td style="color: #fff; font-weight: 500;">{{ aporte.meta.titulo }}</td>
+                    <td style="color: rgba(255,255,255,0.6);">{{ aporte.metodo }}</td>
+                    <td style="color: #16a34a; font-weight: 700; text-align: right; padding-right: 0;">+ ${{ aporte.monto|floatformat:0 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.4); padding: 20px;">No se registran aportes recientes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="nota-final" style="color: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.1); margin-top: 40px; text-align: center;">
+    © 2026 PesatusPesos · Reporte Estratégico de Ahorros · Generado Automáticamente
+</div>
+{% endblock %}

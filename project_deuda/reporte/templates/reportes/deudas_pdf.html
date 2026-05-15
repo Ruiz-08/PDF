@@ -1,0 +1,158 @@
+{% extends "reportes/base_pdf.html" %}
+
+{% block contenido %}
+<div class="seccion">
+
+    <!-- ── Título de sección ────────────────────────────────── -->
+    <h1 class="titulo-seccion">Estado General de Deudas</h1>
+    <div class="subtitulo-seccion">
+        Consolidado detallado de obligaciones y saldos reales registrados en la plataforma
+    </div>
+
+    <!-- ── Tarjetas KPI ──────────────────────────────────────── -->
+    <div class="fila-kpis">
+        <div class="kpi-card">
+            <span class="kpi-etiqueta">Total Obligaciones</span>
+            <span class="kpi-valor">{{ lista_deudas|length }}</span>
+            <span class="kpi-sub">Deudas registradas</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-etiqueta">Capital Inicial</span>
+            <span class="kpi-valor">${{ suma_inicial|floatformat:0 }}</span>
+            <span class="kpi-sub">Monto total original</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-etiqueta">Total Consolidado</span>
+            <span class="kpi-valor">${{ suma_total|floatformat:0 }}</span>
+            <span class="kpi-sub">Saldo total pendiente</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-etiqueta">Fecha Emisión</span>
+            <span class="kpi-valor" style="font-size:12px;">{{ fecha_actual|date:"d/m/Y" }}</span>
+            <span class="kpi-sub">{{ fecha_actual|date:"H:i" }} hrs</span>
+        </div>
+    </div>
+
+    <!-- ── Tabla Detallada de Deudas ────────────────────────── -->
+    <div class="titulo-bloque" style="margin-bottom: 10px; padding-left: 5px; border-bottom: none;">&#9632; Detalle de Obligaciones Financieras</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Entidad / Acreedor</th>
+                <th style="width: 15%;">Tipo</th>
+                <th style="width: 18%;">Saldo Inicial</th>
+                <th style="width: 18%;">Saldo Actual</th>
+                <th style="width: 12%;">Vencimiento</th>
+                <th style="width: 12%;">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for deuda in lista_deudas %}
+            <tr>
+                <td><strong>{{ deuda.acreedor }}</strong></td>
+                <td style="color: var(--gris-elegante);">{{ deuda.tipo }}</td>
+                <td>${{ deuda.saldo_inicial|floatformat:0 }}</td>
+                <td style="font-weight: 700; color: var(--azul-premium);">${{ deuda.saldo_actual|floatformat:0 }}</td>
+                <td>{{ deuda.vencimiento|date:"d/m/Y" }}</td>
+                <td>
+                    <span class="badge-status
+                        {% if deuda.estado == 'Al día' %}status-exito
+                        {% elif deuda.estado == 'Pendiente' %}status-pendiente
+                        {% else %}status-proximo
+                        {% endif %}">
+                        {{ deuda.estado }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ── Historial de Pagos ──────────────────────────────── -->
+    <div style="margin-bottom: 22px;">
+        <div class="titulo-bloque" style="margin-bottom: 10px; padding-left: 5px; border-bottom: none;">&#9632; Historial Reciente de Pagos</div>
+        <table>
+            <thead>
+                <tr style="background: linear-gradient(135deg, var(--azul-medio) 0%, var(--azul-premium) 100%);">
+                    <th style="width: 20%;">Fecha</th>
+                    <th style="width: 30%;">Acreedor Asociado</th>
+                    <th style="width: 20%;">Monto</th>
+                    <th style="width: 15%;">Método</th>
+                    <th style="width: 15%;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in lista_pagos %}
+                <tr>
+                    <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                    <td><strong>{{ pago.deuda.acreedor }}</strong></td>
+                    <td style="color: var(--exito); font-weight: 700;">${{ pago.monto_pago|floatformat:0 }}</td>
+                    <td>{{ pago.metodo_pago }}</td>
+                    <td><span class="badge-status status-exito" style="padding: 2px 6px;">Aplicado</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--gris-elegante); padding: 15px;">
+                        No se registran abonos recientes.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Distribución visual y Gráficas ──────────────────── -->
+    <div style="display: table; width: 100%; margin-bottom: 22px; border-spacing: 15px 0;">
+        
+        <!-- Columna Izquierda: Distribución por Entidad -->
+        <div style="display: table-cell; width: 50%; vertical-align: top;">
+            <div class="bloque-distribucion" style="margin-bottom: 0; min-height: 220px;">
+                <div class="titulo-bloque">&#9632; Distribución de Deuda Actual</div>
+                {% for deuda in lista_deudas %}
+                    {% if suma_total > 0 %}
+                        {% widthratio deuda.saldo_actual suma_total 100 as porcentaje %}
+                    {% else %}
+                        {% with porcentaje=0 %}{% endwith %}
+                    {% endif %}
+                    <div class="barra-fila">
+                        <div class="barra-info">
+                            <span class="barra-nombre">{{ deuda.acreedor }}</span>
+                            <span class="barra-monto">${{ deuda.saldo_actual|floatformat:0 }}</span>
+                        </div>
+                        <div class="barra-track">
+                            <div class="barra-fill" style="width: {% if suma_total > 0 %}{{ porcentaje }}{% else %}0{% endif %}%;"></div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p style="font-size: 8px; color: var(--gris-elegante);">Sin datos de deudas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Pagos Mensuales (Gráfica de Barras) -->
+        <div style="display: table-cell; width: 50%; vertical-align: top;">
+            <div class="bloque-distribucion" style="margin-bottom: 0; min-height: 220px; background: white;">
+                <div class="titulo-bloque">&#9632; Abonos por Mes (Últimos 6 meses)</div>
+                <div style="display: table; width: 100%; height: 130px; border-bottom: 1px solid var(--borde-suave); margin-top: 10px;">
+                    {% for item in pagos_mensuales %}
+                        <div style="display: table-cell; vertical-align: bottom; text-align: center; padding: 0 5px;">
+                            <div style="font-size: 6px; color: var(--azul-premium); font-weight: bold; margin-bottom: 3px;">
+                                {% if item.monto > 0 %}${{ item.monto|floatformat:0 }}{% endif %}
+                            </div>
+                            <div style="background: linear-gradient(to top, var(--azul-premium), var(--azul-medio)); width: 100%; border-radius: 3px 3px 0 0; 
+                                        height: {% if max_pago_mes > 0 %}{% widthratio item.monto max_pago_mes 100 %}{% else %}0{% endif %}px;
+                                        min-height: {% if item.monto > 0 %}2px{% else %}0{% endif %};">
+                            </div>
+                            <div style="font-size: 7px; color: var(--gris-elegante); margin-top: 5px; font-weight: 700;">{{ item.mes }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="font-size: 7px; color: var(--gris-suave); margin-top: 10px; text-align: center;">
+                    Monto total abonado en este periodo: <strong>${{ total_abonado|floatformat:0 }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

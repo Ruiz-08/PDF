@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titulo %}Reporte Oficial PesatusPesos{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'reportes/css/pdf.css' %}">
+</head>
+<body>
+
+    <!-- =====================================================
+         MARCA DE AGUA — Se conserva el diseño original
+         ===================================================== -->
+    <img id="marca-agua" src="{% static 'reportes/img/marcaAgua.png' %}" alt="Marca de Agua">
+
+    <!-- =====================================================
+         ENCABEZADO CORRIENTE (running element)
+         ===================================================== -->
+    <div id="encabezado">
+        <div class="contenedor-encabezado">
+
+            <!-- Izquierda: Branding de la empresa -->
+            <div class="col-header header-izq">
+                <img src="{% static 'reportes/img/coins-solid.png' %}" class="logo-header" alt="Logo">
+                <div class="brand-header-txt">
+                    <h1>PESATUSPESOS</h1>
+                    <p>Control Financiero</p>
+                </div>
+            </div>
+
+            <!-- Derecha: Tarjeta de identificación del reporte -->
+            <div class="col-header header-der">
+                <div class="card-reporte">
+                    <span class="titulo-reporte">&#128202; Reporte Financiero Oficial</span>
+                    <div class="meta-reporte">
+                        <div>{{ nombre_reporte|default:"Resumen de Obligaciones" }}</div>
+                        <div>Fecha de emisión: {{ fecha_actual|date:"d/m/Y H:i" }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- =====================================================
+         PIE DE PÁGINA CORRIENTE (running element)
+         ===================================================== -->
+    <div id="pie-pagina">
+
+        <div class="contenedor-pie">
+
+            <!-- Izquierda: Logo y Nombre -->
+            <div class="col-pie pie-branding">
+                <img src="{% static 'reportes/img/logo.png' %}" class="logo-pie" alt="Logo Empresa">
+                <h3 class="pie-titulo">PesatusPesos</h3>
+                <div class="pie-txt">Control inteligente de finanzas</div>
+            </div>
+
+            <!-- Centro: Información de Contacto -->
+            <div class="col-pie pie-contacto">
+                <div class="pie-etiqueta">Contacto</div>
+                <div class="pie-txt">{{ empresa.email }}</div>
+                <div class="pie-txt">Tel: {{ empresa.telefono }}</div>
+                <div class="pie-txt">{{ empresa.sitio_web }}</div>
+            </div>
+
+            <!-- Derecha: Ubicación -->
+            <div class="col-pie pie-ubicacion">
+                <div class="pie-etiqueta">Ubicación</div>
+                <div class="pie-txt">{{ empresa.ubicacion }}</div>
+                <div class="pie-txt">Colombia</div>
+            </div>
+
+        </div>
+
+        <!-- Franja inferior con copyright y paginación -->
+        <div class="franja-final">
+            <div class="txt-pag" style="text-align: left; opacity: 0;">Página 0 de 0</div> <!-- Espaciador invisible -->
+            <div class="txt-copy">
+                &copy; 2026 PesatusPesos &middot; Documento oficial generado automáticamente por la plataforma &middot; Proyecto SENA
+            </div>
+            <div class="txt-pag">
+                Página <span class="num-pag"></span> de <span class="tot-pag"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =====================================================
+         CONTENIDO (definido en cada plantilla hija)
+         ===================================================== -->
+    <div class="contenido">
+        {% block contenido %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

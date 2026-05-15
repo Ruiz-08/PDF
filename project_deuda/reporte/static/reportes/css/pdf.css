@@ -1,0 +1,533 @@
+/* ============================================================
+   CONFIGURACIÓN DE PÁGINA - TAMAÑO CARTA (Letter)
+   8.5in x 11in — estándar oficio/carta Latinoamérica
+   ============================================================ */
+@page {
+    size: Letter;
+    margin: 4.2cm 0 4.5cm 0;
+
+    @top-left {
+        content: element(encabezado);
+    }
+    @bottom-center {
+        content: element(pie-pagina);
+    }
+}
+
+/* ============================================================
+   PALETA DE COLORES CORPORATIVA PREMIUM
+   ============================================================ */
+:root {
+    --azul-premium:   #0b1526;
+    --azul-medio:     #162035;
+    --dorado-premium: #c9a84c;
+    --dorado-claro:   #e8c96e;
+    --gris-elegante:  #64748b;
+    --gris-suave:     #94a3b8;
+    --blanco-suave:   #fafbfc;
+    --fondo-tabla:    #f0f4f8;
+    --borde-suave:    #dde3ed;
+    --texto-oscuro:   #1a2540;
+    --texto-medio:    #334155;
+    --exito:          #16a34a;
+    --pendiente:      #d97706;
+    --alerta:         #dc2626;
+}
+
+/* ============================================================
+   ESTILOS GLOBALES
+   ============================================================ */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    color: var(--texto-oscuro);
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    background-color: white;
+}
+
+.contenido {
+    padding: 0 1.6cm;
+}
+
+/* ============================================================
+   ENCABEZADO (HEADER) — RUNNING ELEMENT
+   Ancho Carta: 215.9mm
+   ============================================================ */
+#encabezado {
+    position: running(encabezado);
+    width: 215.9mm;
+    background: linear-gradient(135deg, var(--blanco-suave) 0%, #eef2f8 100%);
+    border-bottom: 3px solid var(--dorado-premium);
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(11, 21, 38, 0.08);
+}
+
+.contenedor-encabezado {
+    display: table;
+    width: 100%;
+    padding: 16px 1.6cm;
+}
+
+.col-header {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* Información del Reporte — Izquierda */
+.header-izq {
+    width: 52%;
+    text-align: left;
+}
+
+/* Branding — Derecha */
+.header-der {
+    width: 48%;
+    text-align: right;
+}
+
+/* Tarjeta de identificación del reporte */
+.card-reporte {
+    background: linear-gradient(135deg, var(--azul-premium) 0%, var(--azul-medio) 100%);
+    padding: 11px 16px;
+    border-radius: 6px;
+    display: inline-block;
+    color: white;
+    border-left: 4px solid var(--dorado-premium);
+    box-shadow: 0 3px 12px rgba(11, 21, 38, 0.2);
+}
+
+.titulo-reporte {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--dorado-claro);
+    margin-bottom: 4px;
+    display: block;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.meta-reporte {
+    font-size: 8px;
+    color: #c8d6e8;
+    line-height: 1.7;
+}
+
+/* Branding derecho */
+.logo-header {
+    height: 38px;
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    opacity: 0.9;
+}
+
+.brand-header-txt {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.brand-header-txt h1 {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--azul-premium);
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.brand-header-txt p {
+    font-size: 7.5px;
+    color: var(--dorado-premium);
+    margin: 2px 0 0 0;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Línea decorativa bajo el encabezado */
+.header-acento {
+    height: 2px;
+    background: linear-gradient(90deg, var(--dorado-premium), transparent);
+    width: 100%;
+}
+
+/* ============================================================
+   PIE DE PÁGINA (FOOTER) — RUNNING ELEMENT
+   ============================================================ */
+#pie-pagina {
+    position: running(pie-pagina);
+    width: 215.9mm;
+    background: linear-gradient(135deg, var(--blanco-suave) 0%, #eef2f8 100%);
+    color: var(--texto-oscuro);
+    padding: 0;
+    border-top: 3px solid var(--dorado-premium);
+}
+
+.contenedor-pie {
+    display: table;
+    width: 100%;
+    padding: 14px 1.6cm 14px 1.6cm;
+    border-bottom: 1px solid var(--borde-suave);
+}
+
+.col-pie {
+    display: table-cell;
+    width: 33.33%;
+    vertical-align: middle;
+}
+
+.pie-branding  { text-align: left; }
+.pie-contacto  { text-align: center; }
+.pie-ubicacion { text-align: right; }
+
+.logo-pie {
+    height: 28px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.pie-titulo {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--azul-premium);
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.pie-etiqueta {
+    font-size: 7px;
+    color: var(--dorado-premium);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.pie-txt {
+    font-size: 7.5px;
+    color: var(--texto-medio);
+    margin: 1px 0;
+    line-height: 1.5;
+}
+
+/* Franja inferior con copyright y paginación */
+.franja-final {
+    background-color: #eef2f8;
+    padding: 8px 1.6cm;
+    display: table;
+    width: 100%;
+    border-top: 1px solid var(--borde-suave);
+}
+
+.txt-copy {
+    display: table-cell;
+    font-size: 6.5px;
+    color: var(--texto-medio);
+    vertical-align: middle;
+    text-align: center;
+}
+
+.txt-pag {
+    display: table-cell;
+    font-size: 8px;
+    color: var(--dorado-premium);
+    text-align: right;
+    font-weight: 800;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   MARCA DE AGUA — Se conserva el diseño original
+   ============================================================ */
+#marca-agua {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.07;
+    z-index: -1000;
+    width: 680px;
+}
+
+/* ============================================================
+   SECCIONES DE CONTENIDO
+   ============================================================ */
+.seccion {
+    padding-top: 0.4cm;
+}
+
+/* Título principal de sección */
+h1.titulo-seccion {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--azul-premium);
+    margin: 0 0 4px 0;
+    letter-spacing: -0.5px;
+}
+
+/* Subtítulo descriptivo */
+.subtitulo-seccion {
+    font-size: 9px;
+    color: var(--gris-elegante);
+    margin-bottom: 20px;
+    padding-left: 14px;
+    border-left: 3px solid var(--dorado-premium);
+    line-height: 1.6;
+}
+
+/* ============================================================
+   TARJETAS KPI — Fila de métricas en la parte superior
+   ============================================================ */
+.fila-kpis {
+    display: table;
+    width: 100%;
+    margin-bottom: 22px;
+    border-spacing: 8px 0;
+}
+
+.kpi-card {
+    display: table-cell;
+    width: 25%;
+    background: linear-gradient(135deg, var(--azul-premium) 0%, var(--azul-medio) 100%);
+    border-radius: 8px;
+    padding: 13px 12px;
+    text-align: center;
+    border-bottom: 3px solid var(--dorado-premium);
+    box-shadow: 0 4px 15px rgba(11, 21, 38, 0.15);
+}
+
+.kpi-etiqueta {
+    font-size: 7px;
+    color: var(--gris-suave);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.kpi-valor {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--dorado-claro);
+    display: block;
+    line-height: 1.1;
+}
+
+.kpi-sub {
+    font-size: 7px;
+    color: var(--gris-suave);
+    margin-top: 3px;
+    display: block;
+}
+
+/* ============================================================
+   GRÁFICA DE BARRAS CSS (Distribución de deuda)
+   ============================================================ */
+.bloque-distribucion {
+    background: linear-gradient(135deg, #f8fafb 0%, #eef2f8 100%);
+    border: 1px solid var(--borde-suave);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 22px;
+}
+
+.titulo-bloque {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--azul-premium);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--borde-suave);
+}
+
+.barra-fila {
+    margin-bottom: 10px;
+}
+
+.barra-info {
+    display: table;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.barra-nombre {
+    display: table-cell;
+    font-size: 8.5px;
+    font-weight: 600;
+    color: var(--texto-medio);
+}
+
+.barra-monto {
+    display: table-cell;
+    text-align: right;
+    font-size: 8.5px;
+    font-weight: 800;
+    color: var(--azul-premium);
+}
+
+.barra-porcentaje-txt {
+    font-size: 7.5px;
+    color: var(--dorado-premium);
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+.barra-track {
+    width: 100%;
+    background-color: #dde3ed;
+    height: 9px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.barra-fill {
+    background: linear-gradient(90deg, var(--dorado-premium), var(--dorado-claro));
+    height: 100%;
+    border-radius: 5px;
+    min-width: 3px;
+}
+
+/* ============================================================
+   TABLA DE DEUDAS — Estilo Premium
+   ============================================================ */
+table {
+    width: 100%;
+    margin-bottom: 22px;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(11, 21, 38, 0.08);
+}
+
+thead tr {
+    background: linear-gradient(135deg, var(--azul-premium) 0%, var(--azul-medio) 100%);
+}
+
+th {
+    color: white;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 13px 10px;
+    text-align: left;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--dorado-premium);
+}
+
+td {
+    padding: 10px 10px;
+    font-size: 9px;
+    color: var(--texto-medio);
+    border-bottom: 1px solid var(--borde-suave);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f6f9fc;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: white;
+}
+
+tbody tr:hover {
+    background-color: #eef2f8;
+}
+
+/* ============================================================
+   BADGES DE ESTADO
+   ============================================================ */
+.badge-status {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.status-exito {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.status-pendiente {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+.status-proximo {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+/* ============================================================
+   TARJETA TOTAL CONSOLIDADO
+   ============================================================ */
+.contenedor-totales {
+    overflow: hidden;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.card-total {
+    background: linear-gradient(135deg, var(--azul-premium) 0%, var(--azul-medio) 100%);
+    color: white;
+    padding: 22px 25px;
+    border-radius: 10px;
+    width: 300px;
+    float: right;
+    border-bottom: 5px solid var(--dorado-premium);
+    box-shadow: 0 6px 25px rgba(11, 21, 38, 0.25);
+}
+
+.card-total h3 {
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--gris-suave);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 8px 0;
+}
+
+.monto-total {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--dorado-claro);
+    margin: 0 0 8px 0;
+    line-height: 1;
+}
+
+.sub-total {
+    font-size: 7.5px;
+    color: #8fa8c8;
+    line-height: 1.6;
+    border-top: 1px solid rgba(201, 168, 76, 0.2);
+    padding-top: 8px;
+    margin-top: 5px;
+}
+
+/* ============================================================
+   CONTADORES DE PÁGINA
+   ============================================================ */
+.num-pag::after { content: counter(page); }
+.tot-pag::after { content: counter(pages); }

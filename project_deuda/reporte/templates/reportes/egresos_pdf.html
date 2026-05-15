@@ -1,0 +1,217 @@
+{% extends "reportes/base_pdf.html" %}
+
+{% block content %}
+<style>
+    /* Estilos específicos para imitar el Dashboard de Egresos */
+    .dashboard-container {
+        padding: 0;
+    }
+    
+    .resumen-superior {
+        display: table;
+        width: 100%;
+        border-spacing: 15px 0;
+        margin-bottom: 25px;
+        margin-left: -15px;
+    }
+    
+    .tarjeta-resumen {
+        display: table-cell;
+        width: 50%;
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .tarjeta-resumen h3 {
+        color: var(--dorado);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin: 0 0 10px 0;
+        letter-spacing: 1px;
+    }
+    
+    .tarjeta-resumen .monto {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .seccion-tabla-pdf {
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .header-tabla {
+        color: var(--dorado);
+        font-size: 1rem;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(207, 181, 60, 0.2);
+        padding-bottom: 8px;
+    }
+
+    .seccion-analisis-pdf {
+        display: table;
+        width: 100%;
+        border-spacing: 15px 0;
+        margin-left: -15px;
+    }
+
+    .tarjeta-analisis {
+        display: table-cell;
+        background: #001a2d;
+        border: 1px solid rgba(207, 181, 60, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        vertical-align: top;
+    }
+
+    .tarjeta-izq { width: 60%; }
+    .tarjeta-der { width: 40%; }
+
+    .chart-title {
+        color: var(--dorado);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    /* Gráfica de barras adaptada del dashboard */
+    .bar-row {
+        height: 180px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        padding: 0 20px 10px 20px;
+    }
+
+    .bar-col {
+        width: 40%;
+        text-align: center;
+    }
+
+    .bar-rect {
+        width: 100%;
+        border-radius: 6px 6px 0 0;
+        position: relative;
+        min-height: 5px;
+    }
+
+    .bar-val {
+        position: absolute;
+        top: -22px;
+        left: 0;
+        right: 0;
+        font-size: 0.8rem;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .bar-lab {
+        color: rgba(255,255,255,0.7);
+        font-size: 0.75rem;
+        margin-top: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    /* Lista de categorías (Sustituye al gráfico circular por legibilidad) */
+    .cat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .cat-name { color: rgba(255,255,255,0.8); font-size: 0.85rem; }
+    .cat-val { color: var(--dorado); font-weight: 700; font-size: 0.85rem; }
+
+</style>
+
+<div class="dashboard-container">
+    <!-- Resumen Superior (Tarjetas del Dashboard) -->
+    <div class="resumen-superior">
+        <div class="tarjeta-resumen">
+            <h3>GASTOS TOTALES</h3>
+            <div class="monto" style="color: #ff4d4d; text-shadow: 0 0 10px rgba(255, 77, 77, 0.3);">${{ total_egresos|floatformat:0 }}</div>
+        </div>
+        <div class="tarjeta-resumen">
+            <h3>SALDO ACTUAL MES</h3>
+            <div class="monto" style="color: #16a34a;">${{ egresos_mes_actual|floatformat:0 }}</div>
+        </div>
+    </div>
+
+    <!-- Gestión de Egresos - Detalle (Contenedor del Dashboard) -->
+    <div class="seccion-tabla-pdf">
+        <div class="header-tabla">Gestión de Egresos - Detalle de Operaciones</div>
+        <table class="tabla-premium" style="background: transparent;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(207, 181, 60, 0.3);">
+                    <th style="color: var(--dorado); background: transparent; padding-left: 0;">Fecha</th>
+                    <th style="color: var(--dorado); background: transparent;">Descripción</th>
+                    <th style="color: var(--dorado); background: transparent;">Concepto / Fuente</th>
+                    <th style="color: var(--dorado); background: transparent; text-align: right; padding-right: 0;">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for egreso in lista_egresos %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <td style="color: rgba(255,255,255,0.8); padding-left: 0;">{{ egreso.fecha|date:"d/m/Y" }}</td>
+                    <td style="color: #fff; font-weight: 500;">{{ egreso.descripcion }}</td>
+                    <td style="color: rgba(255,255,255,0.6);">{{ egreso.concepto }}</td>
+                    <td style="color: #ff4d4d; font-weight: 700; text-align: right; padding-right: 0;">${{ egreso.monto|floatformat:0 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Análisis de Evolución y Distribución (Grid del Dashboard) -->
+    <div class="seccion-analisis-pdf">
+        <!-- Tarjeta Izquierda (Evolución de Egresos) -->
+        <div class="tarjeta-analisis tarjeta-izq">
+            <div class="chart-title">Evolución de Egresos (Comparativa)</div>
+            <div class="bar-row">
+                {% for mes in egresos_mensuales_ultimos_2 %}
+                <div class="bar-col">
+                    <div class="bar-rect" style="{{ mes.css_style }}">
+                        <span class="bar-val">${{ mes.monto|floatformat:0 }}</span>
+                    </div>
+                    <div class="bar-lab">{{ mes.label }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-top: 10px; text-align: center;">
+                <span style="color: rgba(255,255,255,0.4); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;">Gasto Acumulado del Periodo</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta Derecha (Distribución de Fuentes) -->
+        <div class="tarjeta-analisis tarjeta-der">
+            <div class="chart-title">Distribución por Fuentes</div>
+            <div style="padding-top: 5px;">
+                {% for cat in lista_categorias|slice:":5" %}
+                <div class="cat-item">
+                    <span class="cat-name">{{ cat.nombre }}</span>
+                    <span class="cat-val">${{ cat.monto|floatformat:0 }}</span>
+                </div>
+                {% empty %}
+                <div style="text-align: center; color: rgba(255,255,255,0.3); padding: 20px;">Sin datos</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="nota-final" style="color: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.1); margin-top: 40px; text-align: center;">
+    © 2026 PesatusPesos · Documento oficial generado automáticamente por la plataforma · Proyecto SENA
+</div>
+{% endblock %}

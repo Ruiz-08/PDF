@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Ingresos - Dashboard Financiero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'panel_ingresos/css/ingresos.css' %}">
+    <!-- Fonts and Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+
+    <div class="contenedor-dashboard" style="margin-top: 10px;">
+        <!-- Encabezado -->
+        <header class="encabezado-dashboard">
+            <a href="{% url 'panel_deuda:index' %}" class="btn-regresar" id="btnRegresar">
+                <i class="fas fa-arrow-left"></i> Regresar
+            </a>
+            <div class="selector-mes">
+                <button class="flecha-nav" id="mesPrevio"><i class="fas fa-chevron-left"></i></button>
+                <div class="mes-info-central">
+                    <span class="mes-actual" id="nombreMes">ABRIL 2026</span>
+                    <button class="btn-calendario" id="abrirPicker">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                </div>
+                <button class="flecha-nav" id="mesSiguiente"><i class="fas fa-chevron-right"></i></button>
+
+                <!-- Modal mejorado -->
+                <div class="picker-calendario-premium" id="pickerCalendario">
+                    <div class="picker-body">
+                        <div class="columna-anio">
+                            <span class="label-seccion">AÑO</span>
+                            <div class="input-anio-contenedor">
+                                <input type="number" id="inputAnioManual" class="input-anio-premium" min="1900" max="2100" autocomplete="off">
+                                <div id="listaAniosDropdown" class="dropdown-anios-premium"></div>
+                                <span id="errorAnio" class="error-mensaje"></span>
+                            </div>
+                        </div>
+                        <div class="grid-meses-seccion">
+                            <span class="label-seccion">MES</span>
+                            <div class="grid-meses" id="gridMeses"></div>
+                        </div>
+                    </div>
+                    <div class="picker-footer">
+                        <button class="btn-limpiar" id="btnLimpiarFiltro">
+                            <i class="fas fa-border-none"></i> Limpiar
+                        </button>
+                        <button class="btn-aplicar" id="btnAplicarFiltro">
+                            <i class="fas fa-check"></i> Aplicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100px;"></div> <!-- Spacer for centering -->
+        </header>
+
+        <!-- Resumen Superior -->
+        <section class="resumen-superior">
+            <div class="tarjeta-resumen">
+                <h3>Ingresos del Periodo</h3>
+                <div class="monto" id="resumenIngresos">$ 0</div>
+            </div>
+        </section>
+
+        <!-- Gestión de Ingresos -->
+        <section class="seccion-tabla">
+            <div class="header-tabla-acciones">
+                <h2>Gestión de Ingresos - Detalle</h2>
+                <div class="grupo-exportar">
+                    <button id="btnExportarExcel" class="btn-exportar" title="Descargar Excel">
+                        <i class="fas fa-file-excel"></i> <span>EXCEL</span>
+                    </button>
+                    <button id="btnExportarPDF" class="btn-exportar" title="Descargar PDF">
+                        <i class="fas fa-file-pdf"></i> <span>PDF</span>
+                    </button>
+                </div>
+            </div>
+            <div class="contenedor-tabla">
+                <table id="tablaIngresos">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Descripción</th>
+                            <th>Método</th>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla">
+                        <!-- Filas insertadas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="paginacion-contenedor" style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                <button id="btnPrevPag" class="btn-regresar" style="padding: 0.3rem 0.8rem;"><i class="fas fa-chevron-left"></i></button>
+                <span id="infoPaginacion" style="color: var(--gold-light); font-size: 0.9rem;">1 / 1</span>
+                <button id="btnNextPag" class="btn-regresar" style="padding: 0.3rem 0.8rem;"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="pie-tabla" style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="btn-agregar" id="btnAgregar">
+                    AGREGAR
+                </button>
+                <button class="btn-agregar" id="btnGuardar" style="background: linear-gradient(135deg, var(--gold-light), var(--matte-gold));">
+                    <i class="fas fa-save"></i> GUARDAR
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección de Análisis -->
+        <section class="seccion-analisis">
+            <div style="width: 100%; margin-bottom: 0.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;">
+                <h2 style="color: var(--gold-light); font-size: 1.1rem; text-transform: uppercase;">Análisis de Evolución y Distribución</h2>
+            </div>
+            
+            <div class="contenedor-analisis-grid">
+                <!-- Tarjeta Izquierda -->
+                <div class="tarjeta-analisis tarjeta-izq">
+                    <!-- Barras -->
+                    <div class="contenedor-grafico-barras">
+                        <h3 style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-light); margin-bottom: 1rem; text-align: center;">Evolución de Ingresos</h3>
+                        <canvas id="graficoBarras"></canvas>
+                    </div>
+                    <!-- Resumen Inferior -->
+                    <div class="resumen-inferior" style="width: 90%; margin: 1.5rem auto 0 auto; border-top: 1px solid var(--glass-border); padding-top: 1rem; display: flex; justify-content: center; align-items: center; gap: 0.8rem;">
+                        <span style="color: var(--text-muted); font-size: 0.70rem; text-transform: uppercase;">Total de Ingresos:</span>
+                        <span id="analisisIngresos" style="color: var(--growth-green); font-size: 1.15rem; font-weight: bold; text-shadow: 0 0 10px rgba(22, 163, 74, 0.4);">$ 0</span>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Derecha -->
+                <div class="tarjeta-analisis tarjeta-der">
+                    <h3 style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-light); margin-bottom: 1rem; text-align: center;">Distribución de Fuentes</h3>
+                    <div class="contenedor-grafico-circular">
+                        <canvas id="graficoCircular"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de Aviso Personalizado -->
+    <div id="modalAviso" class="modal-aviso">
+        <div class="modal-aviso-contenido">
+            <div class="modal-aviso-header">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Atención</span>
+            </div>
+            <p id="mensajeAviso" class="modal-aviso-mensaje"></p>
+            <div class="modal-aviso-footer">
+                <button id="btnCerrarAviso">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div id="modalConfirmacion" class="modal-aviso">
+        <div class="modal-aviso-contenido">
+            <div class="modal-aviso-header">
+                <i class="fas fa-trash-alt" style="color: #ff4d4d;"></i>
+                <span>¿Eliminar registro?</span>
+            </div>
+            <p class="modal-aviso-mensaje">Esta acción no se puede deshacer. ¿Estás seguro de continuar?</p>
+            <div class="modal-aviso-footer" style="display: flex; gap: 10px; justify-content: center;">
+                <button id="btnCancelarEliminar" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);">Cancelar</button>
+                <button id="btnConfirmarEliminar" style="background: linear-gradient(135deg, #ff4d4d, #cf1322); color: #fff; border: none;">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="{% static 'panel_ingresos/js/ingresos.js' %}"></script>
+</body>
+</html>
